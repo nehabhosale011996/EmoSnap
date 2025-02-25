@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoSnap - AI Mood Detector</title>
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        /* Page Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        /* Main Card */
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Emoji Animation */
+        .emoji {
+            font-size: 60px;
+            animation: changeEmoji 3s infinite;
+        }
+
+        @keyframes changeEmoji {
+            0% { content: "😊"; }
+            33% { content: "😡"; }
+            66% { content: "😮"; }
+            100% { content: "😊"; }
+        }
+
+        /* Privacy Message */
+        .privacy {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Start Button */
+        .start-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff9800;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-btn:hover {
+            background: #ff5722;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to EmoSnap! 🎉</h1>
+        <p>Your AI-powered mood detector!</p>
+
+        <!-- Animated Emoji -->
+        <p class="emoji">😊</p>
+
+        <p>Make a face, and let EmoSnap match your mood with the perfect emoji!</p>
+        <p class="privacy">🔒 No images are stored. We only use key feature points to detect emotions!</p>
+
+        <!-- Start Button -->
+        <button class="start-btn" onclick="startApp()">Let’s Go! 🚀</button>
+    </div>
+
+    <script>
+        // Function to start the application
+        function startApp() {
+            window.location.href = "detection.html";  // Redirect to the detection page
+        }
+    </script>
+</body>
+</html>
