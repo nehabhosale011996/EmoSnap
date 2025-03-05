@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>EmoSnap - Live Detection</title>
+      <!-- Import MediaPipe FaceMesh and TensorFlow.js -->
+      <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+      <style>
+         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+         /* Base styling */
+         body {
+         margin: 0;
+         padding: 0;
+         font-family: 'Poppins', sans-serif;
+         background: #1c1c1c;
+         color: white;
+         overflow: hidden;
+         }
+         /* Permission prompt styling */
+         #permission-prompt {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         height: 100vh;
+         background: #1c1c1c;
+         text-align: center;
+         }
+         /* Full-screen camera container (hidden initially) */
+         #camera-container {
+         display: none;
+         position: relative;
+         width: 100vw;
+         height: 100vh;
+         }
+         /* Video & canvas styling for full screen */
+         video, canvas {
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+         }
+         /* Header with the two lines */
+         .detection-header {
+         position: absolute;
+         top: 2%;
+         left: 50%;
+         transform: translateX(-50%);
+         background: rgba(0, 0, 0, 0.5);
+         padding: 10px 20px;
+         border-radius: 10px;
+         text-align: center;
+         font-size: 1.5rem;
+         line-height: 1.2;
+         }
+         /* Overlay detection info */
+         .detection-info {
+         position: absolute;
+         top: 12%;
+         left: 50%;
+         transform: translateX(-50%);
+         background: rgba(0, 0, 0, 0.5);
+         padding: 15px 25px;
+         border-radius: 10px;
+         text-align: center;
+         font-size: 2rem;
+         }
+         /* Stop Detection Button */
+         .stop {
+         position: absolute;
+         bottom: 5%;
+         left: 50%;
+         transform: translateX(-50%);
+         padding: 12px 20px;
+         font-size: 18px;
+         font-weight: bold;
+         border: none;
+         border-radius: 50px;
+         cursor: pointer;
+         background: #dc3545;
+         color: white;
+         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+         transition: 0.3s ease-in-out;
+         }
+         .stop:hover {
+         background: #c82333;
+         }
+         /* Button in permission prompt */
+         .btn {
+         padding: 12px 20px;
+         font-size: 18px;
+         font-weight: bold;
+         border: none;
+         border-radius: 50px;
+         cursor: pointer;
+         background: #28a745;
+         color: white;
+         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+         transition: 0.3s ease-in-out;
+         }
+         .btn:hover {
+         background: #218838;
+         transform: scale(1.05);
+         }
+      </style>
+   </head>
+   <body>
+      <!-- Permission Prompt Section -->
+      <div id="permission-prompt">
+         <div>
+            <h1>Welcome to EmoSnap!</h1>
+            <p>Click the button to allow camera access</p>
+            <button id="start-btn" class="btn">Allow Camera</button>
+         </div>
+      </div>
+      <!-- Full-Screen Camera Container -->
+      <div id="camera-container">
+         <video id="video" autoplay playsinline></video>
+         <canvas id="canvas"></canvas>
+         <!-- Header with the two lines -->
+         <div class="detection-header">
+            🎭 Express Yourself with EmoSnap!<br>
+            Make a face, and EmoSnap will match your mood with an emoji!
+         </div>
+         <!-- Overlay for Detection Info -->
+         <div class="detection-info">
+            <div id="emoji-display">😊</div>
+            <div id="mood-text">Happy</div>
+            <div id="confidence-text">85%</div>
+         </div>
+         <!-- Stop Detection Button -->
+         <button class="stop" onclick="stopDetection()">🚫 Stop Detection</button>
+      </div>
+      <script>
+         // Elements
+         const startBtn = document.getElementById("start-btn");
+         const permissionPrompt = document.getElementById("permission-prompt");
+         const cameraContainer = document.getElementById("camera-container");
+         const video = document.getElementById("video");
+         const canvas = document.getElementById("canvas");
+         const ctx = canvas.getContext("2d");
+         
+         // Request camera permission and enlarge screen on button click
+         startBtn.addEventListener("click", async () => {
+           try {
+             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+             video.srcObject = stream;
+             // Hide permission prompt and show full-screen camera container
+             permissionPrompt.style.display = "none";
+             cameraContainer.style.display = "block";
+         
+             // Start face detection when video data is ready
+             video.onloadeddata = () => {
+               detectFace();
+             };
+           } catch (err) {
+             console.error("Camera access denied!", err);
+           }
+         });
+         
+         // Initialize MediaPipe FaceMesh
+         const faceMesh = new FaceMesh({
+           locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+         });
+         
+         faceMesh.setOptions({
+           maxNumFaces: 1,
+           minDetectionConfidence: 0.5,
+           minTrackingConfidence: 0.5
+         });
+         
+         faceMesh.onResults(onResults);
+         
+         // Capture and process video frames for face detection
+         async function detectFace() {
+           const imageData = await getImageData(video);
+           const videoFrame = new ImageData(new Uint8ClampedArray(imageData), video.videoWidth, video.videoHeight);
+           await faceMesh.send({ image: videoFrame });
+           requestAnimationFrame(detectFace);
+         }
+         
+         // Use OffscreenCanvas to capture image data
+         async function getImageData(videoElement) {
+           const offscreenCanvas = new OffscreenCanvas(videoElement.videoWidth, videoElement.videoHeight);
+           const offscreenCtx = offscreenCanvas.getContext("2d");
+           offscreenCtx.drawImage(videoElement, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+           return offscreenCtx.getImageData(0, 0, offscreenCanvas.width, offscreenCanvas.height).data;
+         }
+         
+         // Draw FaceMesh landmarks and update detection info
+         // Draw FaceMesh landmarks and update detection info
+         function onResults(results) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          if (!results.multiFaceLandmarks) {
+          console.warn("No face detected");
+          return;
+          }
+         
+          // Iterate over each detected face
+          for (const landmarks of results.multiFaceLandmarks) {
+          // Check if we have the expected number of landmarks (468)
+          console.log("Number of landmarks detected: ", landmarks.length); // Should log 468
+          
+          // Draw each landmark as a green dot
+          for (const landmark of landmarks) {
+            const x = landmark.x * canvas.width;
+            const y = landmark.y * canvas.height;
+            ctx.fillStyle = "#00FF00";
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+         
+         // Send landmarks (flattened) to the backend for emotion prediction
+          const flattenedLandmarks = landmarks.map(lm => [lm.x, lm.y, lm.z]).flat(); // Flatten to 1D array
+
+          console.log("flattenedLandmarks: ", flattenedLandmarks); // Should log 468
+
+          fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ landmarks: flattenedLandmarks })
+          })
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("mood-text").innerText = data.emotion; // Update mood text
+            document.getElementById("emoji-display").innerText = getEmojiForEmotion(data.emotion); // Update emoji
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("mood-text").innerText = "Error";
+            document.getElementById("emoji-display").innerText = "❌";
+          });
+         }
+         
+          updateEmoji(); // Placeholder function for mood/emoji update
+          }
+         
+         // Example of helper function to map emotion to emoji
+         function getEmojiForEmotion(emotion) {
+          switch (emotion) {
+            case "Happy":
+              return "😊";
+            case "Angry":
+              return "😡";
+            case "Surprised":
+              return "😮";
+            case "Sad":
+              return "😢";
+            case "Excited":
+              return "😂";
+            default:
+              return "🤔";
+          }
+         }
+         
+         
+         // Placeholder: Randomly update emoji, mood, and confidence
+         function updateEmoji() {
+           const emotions = ["😊", "😡", "😮", "😢", "😂"];
+           const moods = ["Happy", "Angry", "Surprised", "Sad", "Excited"];
+           const randomIndex = Math.floor(Math.random() * emotions.length);
+           document.getElementById("emoji-display").innerText = emotions[randomIndex];
+           document.getElementById("mood-text").innerText = moods[randomIndex];
+           document.getElementById("confidence-text").innerText = Math.floor(Math.random() * 20 + 80) + "%";
+         }
+         
+         // Stop detection and redirect to feedback page
+         function stopDetection() {
+           let stream = video.srcObject;
+           let tracks = stream.getTracks();
+           tracks.forEach(track => track.stop());
+           const detectedMood = document.getElementById("mood-text").innerText;
+           const detectedEmoji = document.getElementById("emoji-display").innerText;
+           window.location.href = `feedback.html?mood=${detectedMood}&emoji=${detectedEmoji}`;
+         }
+      </script>
+   </body>
+</html>
