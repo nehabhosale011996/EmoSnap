@@ -5,5 +5,8 @@ pandas
 tensorflow  # Add this line to install TensorFlow
 scikit-learn  # Add this for label encoding and other utilities
 matplotlib
+imblearn
+keras-tuner
+
 
 # Add other libraries you may nee
