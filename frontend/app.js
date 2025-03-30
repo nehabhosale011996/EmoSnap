@@ -235,7 +235,7 @@ async function sendLandmarksToBackend(landmarks) {
     localStorage.setItem("allPayloads", JSON.stringify(allPayloads));
 
     // Send request to backend
-    const response = await fetch("http://localhost:5000/predict", {
+    const response = await fetch("https://emosnap.onrender.com/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
