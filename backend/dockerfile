@@ -1,4 +1,4 @@
-# Explicitly use Python 3.10.6
+# Explicitly use Python 3.11.5
 FROM python:3.11.5
 
 WORKDIR /app
@@ -10,5 +10,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy app files
 COPY . .
 
-# Run the app
-CMD ["gunicorn", "--bind", "0.0.0.0:5500", "app:app"]
+# Expose the port (optional but good practice)
+EXPOSE 8000
+
+# Run the app with Gunicorn, binding to the PORT environment variable or fallback to 8000
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-8000}", "app:app"]
