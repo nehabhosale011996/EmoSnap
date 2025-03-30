@@ -1,0 +1,621 @@
+<!-- metrics.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoSnap - Your Game Results! 🎉</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        /* Page Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+/* Main Card */
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        /* Animated Emoji */
+        .emoji {
+            font-size: 50px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-10px); }
+        }
+
+        /* Metrics List */
+        .metrics {
+            text-align: left;
+            font-size: 16px;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            list-style: none;
+        }
+
+        .metrics li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .time-taken {
+            font-size: 14px;
+            color: #ffeb3b;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        /* Play Again Button */
+        .play-again-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #ff9800;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .play-again-btn:hover {
+            background: #ff5722;
+            transform: scale(1.1);
+        }
+
+        /* How AI Detected Button */
+        .how-ai-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .how-ai-btn:hover {
+            background: #1976D2;
+            transform: scale(1.1);
+        }
+
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: rgba(255, 255, 255, 0.15);
+            width: 80%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .close-btn {
+            position: sticky;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: #ff5722;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+        }
+
+        .close-btn:hover {
+            background: #e64a19;
+            transform: scale(1.1);
+        }
+
+        .face-container {
+            position: relative;
+            width: 500px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+        }
+
+        .landmark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .landmark-label {
+            position: absolute;
+            font-size: 10px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 1px 4px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            white-space: nowrap;
+            color: rgb(0, 0, 0);
+        }
+
+        .group-title {
+            margin: 20px 0 10px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .group-container {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .legend-text {
+            color: white;
+            line-height: 1.6;
+        }
+
+        .info-section {
+            margin-top: 20px;
+            line-height: 1.6;
+            color: white;
+        }
+
+        .info-section h2 {
+            color: #ffeb3b;
+            margin-bottom: 10px;
+        }
+
+        .info-section ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .info-section li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Game Over! Here’s How You Did! 🎯</h1>
+
+        <!-- Animated Trophy Emoji -->
+        <p class="emoji">🏆</p>
+
+        <!-- Displaying Metrics -->
+        <ul class="metrics">
+            <li>⚡ <strong>Super Speed Stage:</strong> <span id="fastestStage">Loading...</span> 
+                <span class="time-taken" id="fastestTime">(Loading...)</span>
+            </li>
+            <li>🐢 <strong>Slow & Steady Stage:</strong> <span id="slowestStage">Loading...</span> 
+                <span class="time-taken" id="slowestTime">(Loading...)</span>
+            </li>
+            <li>⏳ <strong>Total Mission Time:</strong> <span id="totalTime">Loading...</span> seconds</li>
+            <li>✅ <strong>Emotion Mastery Score:</strong> <span id="correctAnswers">Loading...</span> / 5</li>
+        </ul>
+
+        <!-- Button Container -->
+        <div class="button-container">
+            <button class="play-again-btn" onclick="restartGame()">🔁 Play Again!</button>
+        </div>
+        <div class="button-container">
+            <button class="how-ai-btn" onclick="showPopup()">🤖 How AI Detected the Emotions?</button>
+        </div>
+        <div class="button-container">
+            <button class="play-again-btn" id="download-metrics-btn" style="display: none;" onclick="downloadMetricsExcel()">Download All Metrics</button>
+        </div>
+        <div class="button-container">
+            <button class="play-again-btn" id="download-payloads-btn" onclick="downloadPayloadsExcel()">Download Payloads Data</button>
+        </div>
+    </div>
+
+    <!-- Popup (Modal) -->
+    <div class="popup" id="infoPopup">
+        <div class="popup-content">
+            <!-- Close Button -->
+            <button class="close-btn" onclick="closePopup()">×</button>
+
+            <!-- Facial Landmarks Diagram -->
+            <h1 style="margin-bottom: 30px; text-align: center;">Facial Landmarks</h1>
+            <div class="face-container" id="faceDiagram">
+                <svg width="100%" height="100%" viewBox="0 0 100 120">
+                    <!-- Face outline -->
+                    <defs>
+                        <linearGradient id="faceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFF9C4;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FFE0B2;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50 10 Q70 10 80 20 Q90 40 90 60 Q90 90 70 110 Q50 120 30 110 Q10 90 10 60 Q10 40 20 20 Q30 10 50 10 Z" 
+                          fill="url(#faceGrad)" stroke="#8D6E63" stroke-width="0.8"/>
+                    
+                    <!-- Eyebrows -->
+                    <path d="M30 41.56 Q34 39.56 38 41.56" fill="none" stroke="#5D4037" stroke-width="1"/>
+                    <path d="M62 41.56 Q66 39.56 70 41.56" fill="none" stroke="#5D4037" stroke-width="1"/>
+                    
+                    <!-- Eyes -->
+                    <ellipse cx="34" cy="48" rx="5" ry="3" fill="none" stroke="#B0BEC5" stroke-width="0.5"/>
+                    <ellipse cx="66" cy="48" rx="5" ry="3" fill="none" stroke="#B0BEC5" stroke-width="0.5"/>
+                    
+                    <!-- Nose -->
+                    <path d="M50 52.56 Q48 62.56 50 72.56 Q52 62.56 50 52.56" fill="none" stroke="#BCAAA4" stroke-width="0.4"/>
+                    
+                    <!-- Mouth -->
+                    <path d="M40 89.56 Q50 93.56 60 89.56" fill="none" stroke="#F06292" stroke-width="0.5"/>
+                </svg>
+            </div>
+
+            <!-- Legend -->
+            <div id="legend">
+                <div class="group-container">
+                    <div class="group-title" style="color: #2196F3">Eyes (8 points)</div>
+                    <div class="legend-text">33, 133, 159, 145, 158, 153, 386, 374</div>
+                </div>
+                <div class="group-container">
+                    <div class="group-title" style="color: #4CAF50">Eyebrows (10 points)</div>
+                    <div class="legend-text">70, 63, 105, 66, 107, 55, 65, 52, 53, 46</div>
+                </div>
+                <div class="group-container">
+                    <div class="group-title" style="color: #FF9800">Mouth (12 points)</div>
+                    <div class="legend-text">61, 291, 78, 306, 13, 14, 17, 84, 181, 91, 314, 402</div>
+                </div>
+                <div class="group-container">
+                    <div class="group-title" style="color: #9C27B0">Face Contour (12 points)</div>
+                    <div class="legend-text">0, 17, 291, 61, 200, 423, 151, 152, 148, 176, 377, 400</div>
+                </div>
+                <div class="group-container">
+                    <div class="group-title" style="color: #E91E63">Nose & Cheeks (10 points)</div>
+                    <div class="legend-text">1, 4, 5, 195, 197, 2, 98, 327, 358, 412</div>
+                </div>
+            </div>
+
+            <!-- Educational Content -->
+            <div class="info-section">
+                <h2>1. What Are Facial Landmarks?</h2>
+                <p>Facial landmarks are specific points on your face that the AI looks at to understand what you’re feeling. Think of them like a map of your face! These points include places like the corners of your eyes, the tip of your nose, the edges of your mouth, and even your eyebrows.</p>
+                <p><strong>Key Landmarks:</strong></p>
+                <ul>
+                    <li>Eyes (corners, center)</li>
+                    <li>Eyebrows (inner and outer ends)</li>
+                    <li>Nose (tip, bridge)</li>
+                    <li>Mouth (corners, upper and lower lips)</li>
+                    <li>Jawline (outline of the face)</li>
+                </ul>
+                <p><strong>Why It Matters:</strong> By tracking how these points move or change, the AI can guess if you’re smiling, frowning, or staying calm.</p>
+
+                <h2>2. How Does the AI Use Landmarks to Detect Emotions?</h2>
+                <p><strong>Happy:</strong></p>
+                <ul>
+                    <li><strong>Landmark Clues:</strong> When you’re happy, the corners of your mouth go up to form a smile, and your eyes might squint a little because of ‘crow’s feet’ wrinkles. The AI notices the mouth corners rising and the eyes narrowing.</li>
+                    <li><strong>Example:</strong> If the distance between your mouth corners gets wider and your eyebrows lift slightly, the AI says, ‘That’s happiness!’</li>
+                </ul>
+                <p><strong>Sad:</strong></p>
+                <ul>
+                    <li><strong>Landmark Clues:</strong> When you’re sad, your mouth corners turn down into a frown, and your eyebrows might slant upwards at the inner ends, making a ‘V’ shape. The AI spots these downward curves and eyebrow tilts.</li>
+                    <li><strong>Example:</strong> If your mouth looks like an upside-down ‘U’ and your eyes droop, the AI knows you’re feeling sad.</li>
+                </ul>
+                <p><strong>Neutral:</strong></p>
+                <ul>
+                    <li><strong>Landmark Clues:</strong> When you’re neutral, your mouth stays flat, your eyes are relaxed (not wide or squinted), and your eyebrows don’t tilt much. The AI looks for a lack of big changes in these areas.</li>
+                    <li><strong>Example:</strong> If your mouth is a straight line and your eyes and eyebrows stay steady, the AI thinks, ‘That’s calm and neutral!’</li>
+                </ul>
+
+                <h2>3. How Does the AI Learn This?</h2>
+                <p>The AI was trained with a Keras model, which is like a super-smart recipe book. We showed it tons of pictures of faces with different emotions and told it where the landmarks were in each one. Over time, it learned patterns—like a smile means ‘happy,’ a frown means ‘sad,’ or a flat face means ‘neutral.’ When it sees your face, it compares your landmarks to what it learned and makes a guess!</p>
+
+                <h2>4. What Landmarks Does It Capture?</h2>
+                <p>The AI uses a set of points—usually 68 landmarks—to map your face. These include:</p>
+                <ul>
+                    <li>17 points along your jawline</li>
+                    <li>10 points for your eyebrows (5 per eyebrow)</li>
+                    <li>12 points for your eyes (6 per eye)</li>
+                    <li>9 points for your nose</li>
+                    <li>20 points for your mouth</li>
+                </ul>
+                <p><strong>Visual Idea:</strong> Imagine a connect-the-dots picture of your face. The AI connects these dots to see how your face moves and what emotion it shows.</p>
+
+                <h2>5. Fun Fact for Students</h2>
+                <p>Did you know the AI doesn’t just look at one spot? It checks how all these points work together—like a team! A smile alone might not mean happy unless your eyes are smiling too, and a flat face isn’t neutral unless everything else stays still.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser) {
+            alert("No game data found!");
+            window.location.href = "index.html";
+        }
+
+        // Displaying Metrics
+        document.getElementById("fastestStage").textContent = currentUser.fastestStageName;
+        document.getElementById("fastestTime").textContent = currentUser.fastestStage + " seconds";
+        document.getElementById("slowestStage").textContent = currentUser.slowestStageName;
+        document.getElementById("slowestTime").textContent = currentUser.slowestStage + " seconds";
+        document.getElementById("totalTime").textContent = currentUser.totalTime;
+        document.getElementById("correctAnswers").textContent = currentUser.correctAnswers;
+
+        // Restart Game
+        function restartGame() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";  
+        }
+
+        window.onload = function () {
+            let isAdmin = localStorage.getItem("isAdmin");
+            document.getElementById("download-metrics-btn").style.display = "block";
+
+        };
+
+        // Popup Show/Hide Functions
+        function showPopup() {
+            document.getElementById('infoPopup').style.display = 'flex';
+            renderLandmarks(); // Render landmarks when popup is shown
+        }
+
+        function closePopup() {
+            document.getElementById('infoPopup').style.display = 'none';
+        }
+
+        // Landmark Rendering Function
+        function renderLandmarks() {
+            const LANDMARK_POSITIONS = {
+                // Eyes (symmetrical left and right)
+                33: [29, 41],  // Left eye outer corner
+                133: [31, 42], // Left eye upper middle
+                159: [34, 41], // Left eye inner corner
+                145: [31, 44], // Left eye lower middle
+                158: [29, 43], // Left eye lower outer
+                153: [33, 43], // Left eye inner middle
+                386: [71, 41], // Right eye outer corner
+                374: [66, 41], // Right eye inner corner
+
+                // Eyebrows (symmetrical left and right)
+                70: [30, 34],  // Left eyebrow outer
+                63: [32, 33],  // Left eyebrow middle outer
+                105: [34, 32], // Left eyebrow middle
+                66: [36, 33],  // Left eyebrow middle inner
+                107: [38, 34], // Left eyebrow inner
+                55: [70, 34],  // Right eyebrow outer
+                65: [68, 33],  // Right eyebrow middle outer
+                52: [66, 32],  // Right eyebrow middle
+                53: [64, 33],  // Right eyebrow middle inner
+                46: [62, 34],  // Right eyebrow inner
+
+                // Mouth (symmetrical left and right)
+                61: [40, 74],   // Left corner
+                291: [60, 74],  // Right corner
+                78: [42, 75],   // Left outer
+                306: [58, 75],  // Right outer
+                13: [50, 76],   // Upper middle
+                14: [50, 78],   // Lower middle
+                17: [50, 82],   // Bottom
+                84: [46, 76],   // Upper left
+                181: [54, 76],  // Upper right
+                91: [44, 78],   // Lower left
+                314: [56, 78],  // Lower right
+                402: [50, 74],  // Top
+
+                // Face Contour (symmetrical left and right)
+                0: [50, 10],   // Top of head
+                17: [50, 90],  // Bottom of chin
+                291: [60, 82], // Right mouth corner (already defined in mouth)
+                61: [40, 82],  // Left mouth corner (already defined in mouth)
+                200: [20, 60], // Left cheek
+                423: [80, 60], // Right cheek
+                151: [50, 30], // Forehead middle
+                152: [50, 40], // Upper nose bridge
+                148: [40, 20], // Left forehead
+                176: [60, 20], // Right forehead
+                377: [70, 40], // Right temple
+                400: [30, 40], // Left temple
+
+                // Nose & Cheeks (symmetrical left and right)
+                1: [50, 45],   // Nose bridge
+                4: [48, 55],   // Left nose wing
+                5: [52, 55],   // Right nose wing
+                195: [50, 65], // Nose tip
+                197: [50, 60], // Nose middle
+                2: [50, 50],   // Nose upper middle
+                98: [42, 50],  // Left cheek near nose
+                327: [58, 50], // Right cheek near nose
+                358: [35, 60], // Left cheek middle
+                412: [65, 60]  // Right cheek middle
+            };
+
+            const COLORS = {
+                eyes: '#2196F3',        // Blue
+                eyebrows: '#4CAF50',    // Green
+                mouth: '#FF9800',      // Orange
+                faceContour: '#9C27B0', // Purple
+                noseCheeks: '#E91E63'   // Pink
+            };
+
+            const labelOffsets = {
+                // Eyes
+                33: [10, -10], 133: [10, -10], 159: [-10, -10], 145: [10, 10],
+                158: [10, 10], 153: [-10, 0], 386: [10, -10], 374: [-10, -10],
+                // Eyebrows
+                70: [10, -10], 63: [10, -10], 105: [0, -15], 66: [-10, -10],
+                107: [-10, -10], 55: [10, -10], 65: [10, -10], 52: [0, -15],
+                53: [-10, -10], 46: [-10, -10],
+                // Mouth
+                61: [-10, -10], 291: [10, -10], 78: [-10, 0], 306: [10, 0],
+                13: [0, -15], 14: [0, 15], 17: [0, 15], 84: [-10, -10],
+                181: [10, -10], 91: [-10, 10], 314: [10, 10], 402: [0, -15],
+                // Face Contour
+                0: [0, -15], 17: [0, 15], 200: [-10, 0], 423: [10, 0],
+                151: [0, -15], 152: [0, -15], 148: [-10, -10], 176: [10, -10],
+                377: [10, 0], 400: [-10, 0],
+                // Nose & Cheeks
+                1: [0, -15], 4: [-10, 0], 5: [10, 0], 195: [0, 15],
+                197: [0, 15], 2: [0, -15], 98: [-10, 0], 327: [10, 0],
+                358: [-10, 0], 412: [10, 0]
+            };
+
+            const groups = {
+                eyes: [33, 133, 159, 145, 158, 153, 386, 374],
+                eyebrows: [70, 63, 105, 66, 107, 55, 65, 52, 53, 46],
+                mouth: [61, 291, 78, 306, 13, 14, 17, 84, 181, 91, 314, 402],
+                faceContour: [0, 17, 291, 61, 200, 423, 151, 152, 148, 176, 377, 400],
+                noseCheeks: [1, 4, 5, 195, 197, 2, 98, 327, 358, 412]
+            };
+
+            // Clear existing landmarks to avoid duplicates
+            const faceDiagram = document.getElementById('faceDiagram');
+            faceDiagram.querySelectorAll('.landmark, .landmark-label').forEach(el => el.remove());
+
+            // Render landmarks
+            Object.entries(LANDMARK_POSITIONS).forEach(([id, pos]) => {
+                const landmark = document.createElement('div');
+                landmark.className = 'landmark';
+                landmark.style.left = `${pos[0]}%`;
+                landmark.style.top = `${pos[1]}%`;
+
+                if (groups.eyes.includes(parseInt(id)))
+                    landmark.style.backgroundColor = COLORS.eyes;
+                else if (groups.eyebrows.includes(parseInt(id)))
+                    landmark.style.backgroundColor = COLORS.eyebrows;
+                else if (groups.mouth.includes(parseInt(id)))
+                    landmark.style.backgroundColor = COLORS.mouth;
+                else if (groups.faceContour.includes(parseInt(id)))
+                    landmark.style.backgroundColor = COLORS.faceContour;
+                else
+                    landmark.style.backgroundColor = COLORS.noseCheeks;
+
+                const label = document.createElement('div');
+                label.className = 'landmark-label';
+                label.textContent = id;
+                label.style.left = `${pos[0]}%`;
+                label.style.top = `${pos[1]}%`;
+                const offset = labelOffsets[id] || [10, -10];
+                label.style.transform = `translate(${offset[0]}px, ${offset[1]}px)`;
+
+                faceDiagram.appendChild(landmark);
+                faceDiagram.appendChild(label);
+            });
+        }
+
+        function downloadPayloadsExcel() {
+            let payloadsData = JSON.parse(localStorage.getItem("allPayloads")) || [];
+
+            if (payloadsData.length === 0) {
+                alert("No payload data available.");
+                return;
+            }
+
+            // Flatten landmarks into a readable format (e.g., string representation)
+            const formattedData = payloadsData.map(entry => ({
+                FirstName: entry.firstName,
+                LastInitials: entry.lastInitials,
+                Stage: entry.stage,
+                Timestamp: entry.timestamp,
+                Landmarks: JSON.stringify(entry.landmarks) // Convert landmarks array to string
+            }));
+
+            // Convert to worksheet
+            let worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+            // Create a workbook
+            let workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "PayloadsData");
+
+            // Save the file
+            XLSX.writeFile(workbook, "EmoSnap_Payloads.xlsx");
+        }
+    </script>
+
+    <script src="storeMetrics.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9284c4b2d90244cf',t:'MTc0MzMwNzk0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

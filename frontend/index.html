@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoSnap - AI Mood Detector</title>
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        /* Page Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        /* Main Card */
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        /* Emoji Animation */
+        .emoji {
+            font-size: 50px;
+            animation: changeEmoji 3s infinite;
+        }
+
+        @keyframes changeEmoji {
+            0% { content: "😊"; }
+            33% { content: "😡"; }
+            66% { content: "😮"; }
+            100% { content: "😊"; }
+        }
+
+        /* Privacy Message */
+        .privacy {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Start Button */
+        .start-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #ff9800;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+
+        .start-btn:hover {
+            background: #ff5722;
+            transform: scale(1.1);
+        }
+
+        /* Rules Section */
+        .rules {
+            text-align: left;
+            font-size: 12px;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            list-style: none;
+        }
+
+        .rules li {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to EmoSnap! 🎉</h1>
+        <p>Your AI-powered mood detector!</p>
+
+        <!-- Animated Emoji -->
+        <p class="emoji">😊</p>
+
+        <p>Make a face, and let EmoSnap match your mood with the perfect emoji!</p>
+        <p class="privacy">🔒 No images are stored. We only use key feature points to detect emotions!</p>
+
+        <!-- Start Button -->
+        <button class="start-btn" onclick="startApp()">Let’s Go! 🚀</button>
+
+        <!-- Rules Section -->
+        <ul class="rules">
+            <li>🎭 <strong>Express Yourself:</strong> Use facial expressions to interact.</li>
+            <li>⏱️ <strong>Timed Challenges:</strong> Show the correct emotion in time.</li>
+            <li>🎯 <strong>Match the Emoji:</strong> React correctly to score points!</li>
+            <li>🛑 <strong>Restart or Stop:</strong> You can restart anytime.</li>
+            <li>🔒 <strong>Privacy First:</strong> Your face is not recorded!</li>
+        </ul>
+    </div>
+
+    <script>
+        function startApp() {
+            window.location.href = "register.html";  
+        }
+    </script>
+</body>
+</html>

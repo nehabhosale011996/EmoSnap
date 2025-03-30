@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmoSnap - Live Detection</title>
+
+    <!-- Import TensorFlow.js and MediaPipe FaceMesh -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div id="permission-prompt">
+        <div>
+            <h1>Welcome to EmoSnap!</h1>
+            <p>Click the button to allow camera access</p>
+            <button id="start-btn" class="btn">Allow Camera</button>
+        </div>
+    </div>
+
+    <div id="camera-container" style="display: none;">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+
+        <div class="detection-info">
+            <h2 id="stage-title">Stage 1: Jungle Begins 🌳</h2>
+            <p id="narration">You are walking through a dense jungle...</p>
+            <div id="timer">20s remaining</div>
+            <button class="capture" id="capture-btn">📸 Click here to Predict</button>
+        </div>
+
+        <button class="reset" onclick="resetGame()">🔁 Reset Game</button>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="storeMetrics.js"></script>
+    <script>
+        // List of story files
+        const storyFiles = ["story.js","story1.js", "story2.js", "story3.js", "story4.js", "story5.js", "story6.js", "story7.js"];
+        
+        // Pick a random story
+        const randomStory = storyFiles[Math.floor(Math.random() * storyFiles.length)];
+        
+        // Dynamically load the random story
+        const script = document.createElement("script");
+        script.src = randomStory;
+        script.onload = () => {
+            console.log(`Loaded ${randomStory}`);
+            // Start the game or initialize app.js logic here if needed
+        };
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>

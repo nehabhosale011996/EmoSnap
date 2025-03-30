@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoSnap - Camera Setup</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #ff6a00, #ee0979);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .privacy {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Webcam Preview */
+        #camera-preview {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Start Button */
+        .start-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #28a745;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-btn:hover {
+            background: #218838;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👋 Get Ready for EmoSnap!</h1>
+        <p>Before we begin, let’s set up your camera.</p>
+
+        <!-- Webcam Preview (Initially Black, will be replaced with camera feed) -->
+        <div id="camera-preview">🎥 Camera Loading...</div>
+
+        <p><strong>🔹 Quick Tips for Best Results:</strong></p>
+        <p>📍 Sit in a well-lit area.<br>📍 Keep your face and hands visible.<br>📍 Try different expressions for better emoji matching!</p>
+
+        <p class="privacy">🔒 No images are stored. We only use key feature points for emoji detection.</p>
+
+        <!-- Start Button -->
+        <button class="start-btn" onclick="startDetection()">Start Detection 🚀</button>
+    </div>
+
+    <script>
+        function startDetection() {
+            window.location.href = "detection.html"; // Redirect to the detection screen
+        }
+    </script>
+</body>
+</html>

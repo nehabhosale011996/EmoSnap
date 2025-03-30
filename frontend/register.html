@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - EmoSnap</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        /* Page Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+            width: 100%; /* Increase body width */
+        }
+
+        /* Home Button */
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 10em;
+        }
+
+        .home-btn:hover {
+            background-color: #6a11cb;
+        }
+
+        /* Main Card */
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px; /* Increased container width */
+            width: 100%;
+        }
+
+        /* Title Styling */
+        h2 {
+            margin-bottom: 40px; /* Increased gap between title and first field */
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-wrap: wrap; /* Allow the items to wrap in case they overflow */
+            gap: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: flex-start; /* Align the fields from the left */
+            align-items: center; /* Vertically align the input and label */
+            width: 100%;
+        }
+
+        .form-row label {
+            width: 30%; /* Field label width */
+            text-align: left;
+        }
+
+        .form-row input, .form-row select {
+            width: 65%; /* Input field width */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .last-initials-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .last-initials {
+            width: 50px !important; /* Adjust the width as needed */
+            text-transform: uppercase; /* Ensures input is always uppercase */
+            letter-spacing: 1px; /* Makes it visually clear that only one character should be entered */
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 100%;
+            background: #ff9800;
+            color: white;
+            cursor: pointer;
+            margin-top: 30px; /* Increased gap between last field and button */
+        }
+
+        button:hover {
+            background-color: #6a11cb;
+        }
+
+        select {
+            width: 65%; /* Make it the same width as the text box */
+            padding: 10px;
+            font-size: 16px; /* Ensure text size matches */
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Home Button -->
+    <a href="index.html">
+        <button class="home-btn">Home</button>
+    </a>
+
+    <div class="container">
+        <h2>Register for EmoSnap</h2>
+        <form id="registerForm">
+            <div class="form-row">
+                <label for="name">First Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-row">
+                <label for="last-initials">Last Initials:</label>
+                <div class="last-initials-container">
+                    <input type="text" id="last-initials" name="last-initials" class="last-initials" required maxlength="1">
+                </div>
+            </div>                       
+            <div class="form-row">
+                <label for="grade">Grade:</label>
+                <select id="grade" name="grade" required>
+                    <option value="" disabled selected>Select Grade</option>
+                    <option value="6th Grade">6th Grade</option>
+                    <option value="7th Grade">7th Grade</option>
+                    <option value="8th Grade">8th Grade</option>
+                </select>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+    <script>
+
+        const form = document.getElementById('registerForm');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting 
+            registerUser(); 
+        });
+
+        function registerUser() {
+            const firstName = document.getElementById("name").value;
+            const lastInitials = document.getElementById("last-initials").value;
+            const grade = document.getElementById("grade").value;
+            
+            if (!firstName || !lastInitials || !grade) {
+                alert("Please fill all fields!");
+                return;
+            }
+            
+            currentUser = { firstName, lastInitials, grade, totalTime: 0, correctAnswers: 0, stageTimes: [], stageNames: [] };
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+            showRegistrationConfirmation();
+        }
+
+        function showRegistrationConfirmation() {
+            const overlay = document.createElement("div");
+            overlay.classList.add("alert-overlay");
+
+            overlay.innerHTML = `
+                 <div class="alert-box">
+                    <p>You're registered and ready to go!</p>
+                    <div class="alert-buttons">
+                        <button class="alert-btn confirm" onclick="redirectToDetectionPage()">GO!</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+        }
+
+        function redirectToDetectionPage() {
+            window.location.href = "detection.html";  
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoSnap - Feedback</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            background: #1c1c1c;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .yes { background: #28a745; color: white; }
+        .yes:hover { background: #218838; }
+
+        .no { background: #ff9800; color: white; }
+        .no:hover { background: #e68900; }
+
+        .submit { background: #007bff; color: white; }
+        .submit:hover { background: #0056b3; }
+
+        input {
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>📝 Was the detection correct?</h1>
+    <p><strong>Detected Emotion:</strong> <span id="detected-mood"></span> <span id="detected-emoji"></span></p>
+
+    <button class="btn yes" onclick="saveFeedback(true)">✅ Yes, it was correct</button>
+    <button class="btn no" onclick="showCorrectionOptions()">❌ No, it was wrong</button>
+
+    <div id="correction-options" style="display: none;">
+        <h2>Please enter the correct emoji for your emotion:</h2>
+        <input type="text" id="correct-emoji" placeholder="Type an emoji here...">
+        <button class="btn submit" onclick="saveFeedback(false)">Submit Correction</button>
+    </div>
+
+    <script>
+        // Extract detected emotion from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const detectedMood = urlParams.get("mood");
+        const detectedEmoji = urlParams.get("emoji");
+
+        document.getElementById("detected-mood").innerText = detectedMood;
+        document.getElementById("detected-emoji").innerText = detectedEmoji;
+
+        function showCorrectionOptions() {
+            document.getElementById("correction-options").style.display = "block";
+        }
+
+        function saveFeedback(isCorrect) {
+            let feedbackData = {
+                detectedMood: detectedMood,
+                detectedEmoji: detectedEmoji,
+                correctEmoji: isCorrect ? detectedEmoji : document.getElementById("correct-emoji").value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Save data to localStorage (for now; can be replaced with a database)
+            let storedFeedback = JSON.parse(localStorage.getItem("emoSnapFeedback")) || [];
+            storedFeedback.push(feedbackData);
+            localStorage.setItem("emoSnapFeedback", JSON.stringify(storedFeedback));
+
+            alert("Thank you! Your feedback has been recorded.");
+            window.location.href = "index.html"; // Redirect to home
+        }
+    </script>
+
+</body>
+</html>
