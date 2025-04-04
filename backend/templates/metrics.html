@@ -415,7 +415,7 @@
         let currentUser = JSON.parse(localStorage.getItem("currentUser"));
         if (!currentUser) {
             alert("No game data found!");
-            window.location.href = "index.html";
+            window.location.href = "/";
         }
 
         // Displaying Metrics
@@ -429,7 +429,7 @@
         // Restart Game
         function restartGame() {
             localStorage.removeItem("currentUser");
-            window.location.href = "index.html";  
+            window.location.href = "/";  
         }
 
         window.onload = function () {

@@ -39,7 +39,7 @@ function startGame() {
     loadUser();
     if (!currentUser) {
         alert("No user found! Please register first.");
-        window.location.href = "index.html";
+        window.location.href = "/";
         return;
     }
     const stageTitles = stages.map(stage => stage.title);
@@ -295,7 +295,7 @@ function closeAlert() {
 // Function to reset the game
 function redirectToHomePage() {
     localStorage.removeItem("currentUser");
-    window.location.href = "index.html";  // Redirect to index.html
+    window.location.href = "/";  // Redirect to index.html
 }
 
 function showEndGameConfirmationAlert() {
@@ -316,7 +316,7 @@ function showEndGameConfirmationAlert() {
 
 
 function redirectToMetricsPage() {
-    window.location.href = "metrics.html";  // Redirect to metrics.html
+    window.location.href = "/metrics";  // Redirect to metrics.html
 }
 
 function renderAlert(message, buttonText = null) {
