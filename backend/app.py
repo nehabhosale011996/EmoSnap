@@ -87,31 +87,36 @@ def setup():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Validate request data
-        if not request.json or 'landmarks' not in request.json:
+        print("Received request at /predict")
+        data = request.get_json()
+        print("Payload:", data)
+
+        if not data or 'landmarks' not in data:
+            print("Missing 'landmarks' in request.")
             return jsonify({"error": "Missing 'landmarks' in request body"}), 400
         
-        landmarks = request.json['landmarks']
-        
-        # Validate landmarks
-        if not validate_landmarks(landmarks):
-            return jsonify({"error": "Invalid landmarks format. Expected 468 points with 3 coordinates each."}), 400
+        landmarks = data['landmarks']
 
-        # Preprocess and predict
+        if not validate_landmarks(landmarks):
+            print("Invalid landmark format.")
+            return jsonify({"error": "Expected 468 landmarks with 3 coordinates each."}), 400
+
         processed = preprocess_landmarks(landmarks)
         predictions = model.predict(processed[np.newaxis, ...])[0]
-        
-        # Apply Neutral tweaks
-        predictions[2] += 0.1  # Neutral bias
+
+        predictions[2] += 0.1
         emotion_idx = np.argmax(predictions)
         if predictions[2] > 0.3 and predictions[emotion_idx] - predictions[2] < 0.4:
             emotion_idx = 2
-        
-        return jsonify({
+
+        response = {
             "emotion": EMOTIONS[emotion_idx],
             "confidence": float(predictions[emotion_idx])
-        })
+        }
+        print("Prediction result:", response)
+        return jsonify(response)
     except Exception as e:
+        print("Error during /predict:", e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
