@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div id="permission-prompt">
@@ -37,23 +37,33 @@
         <button class="reset" onclick="resetGame()">🔁 Reset Game</button>
     </div>
 
-    <script src="app.js"></script>
-    <script src="storeMetrics.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script src="{{ url_for('static', filename='storeMetrics.js') }}"></script>
     <script>
-        // List of story files
-        const storyFiles = ["story.js","story1.js", "story2.js", "story3.js", "story4.js", "story5.js", "story6.js", "story7.js"];
+        // List of story files (ensure these exist in the static folder)
+        const storyFiles = [
+            "story.js", "story1.js", "story2.js", 
+            "story3.js", "story4.js", "story5.js", 
+            "story6.js", "story7.js"
+        ];
         
         // Pick a random story
         const randomStory = storyFiles[Math.floor(Math.random() * storyFiles.length)];
-        
-        // Dynamically load the random story
+    
+        // Construct the correct path for Flask static files
         const script = document.createElement("script");
-        script.src = randomStory;
+        script.src = `/static/${randomStory}`;  // Ensure Flask serves files correctly
+    
         script.onload = () => {
             console.log(`Loaded ${randomStory}`);
-            // Start the game or initialize app.js logic here if needed
+            // Initialize app.js logic here if needed
         };
+    
+        script.onerror = () => {
+            console.error(`Failed to load ${randomStory}`);
+        };
+    
         document.body.appendChild(script);
-    </script>
+    </script>    
 </body>
 </html>
